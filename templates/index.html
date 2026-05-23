@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khana Tracker — Pakistani Calorie Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">🫕</span>
+      <div>
+        <h1>Khana Tracker</h1>
+        <p>پاکستانی کھانوں کا حساب</p>
+      </div>
+    </div>
+    <div class="date-nav">
+      <button class="btn-icon" id="prevDay">&#8249;</button>
+      <span id="currentDate" class="date-label"></span>
+      <button class="btn-icon" id="nextDay">&#8250;</button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <section class="panel panel-left">
+    <div class="calorie-ring-wrap">
+      <svg class="ring" viewBox="0 0 200 200">
+        <circle class="ring-bg" cx="100" cy="100" r="80"/>
+        <circle class="ring-fill" id="ringFill" cx="100" cy="100" r="80"
+                stroke-dasharray="502" stroke-dashoffset="502"/>
+      </svg>
+      <div class="ring-center">
+        <span class="cal-number" id="totalCal">0</span>
+        <span class="cal-label">kcal today</span>
+        <span class="cal-goal">/ 2000 goal</span>
+      </div>
+    </div>
+
+    <div class="macro-row">
+      <div class="macro-pill protein">
+        <span class="macro-val" id="totalProtein">0g</span>
+        <span class="macro-name">Protein</span>
+      </div>
+      <div class="macro-pill carbs">
+        <span class="macro-val" id="totalCarbs">0g</span>
+        <span class="macro-name">Carbs</span>
+      </div>
+      <div class="macro-pill fat">
+        <span class="macro-val" id="totalFat">0g</span>
+        <span class="macro-name">Fat</span>
+      </div>
+    </div>
+
+    <div class="meal-sections" id="mealSections"></div>
+
+    <div class="weekly-wrap">
+      <h3 class="section-title">7-day overview</h3>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+  </section>
+
+  <section class="panel panel-right">
+    <h2 class="section-title">Add Food</h2>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search desi khana..." class="search-input" autocomplete="off">
+    </div>
+    <div class="category-filters" id="categoryFilters"></div>
+    <div class="food-grid" id="foodGrid"></div>
+  </section>
+</main>
+
+<!-- Modal OUTSIDE panels, at body level -->
+<div class="modal-backdrop" id="modalBackdrop" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-emoji" id="modalEmoji"></div>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <p class="modal-meta" id="modalMeta"></p>
+
+    <div class="form-row">
+      <label>Quantity</label>
+      <div class="qty-row">
+        <button class="qty-btn" id="qtyMinus">−</button>
+        <input type="number" id="qtyInput" value="1" min="0.25" step="0.25" class="qty-field">
+        <button class="qty-btn" id="qtyPlus">+</button>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Meal</label>
+      <div class="meal-pills">
+        <button class="meal-pill active" data-meal="Breakfast">Breakfast</button>
+        <button class="meal-pill" data-meal="Lunch">Lunch</button>
+        <button class="meal-pill" data-meal="Dinner">Dinner</button>
+        <button class="meal-pill" data-meal="Sehri">Sehri</button>
+        <button class="meal-pill" data-meal="Snack">Snack</button>
+      </div>
+    </div>
+
+    <div class="modal-preview">
+      <span>~<strong id="previewCal">0</strong> kcal</span>
+      <span><strong id="previewP">0</strong>g protein</span>
+      <span><strong id="previewC">0</strong>g carbs</span>
+      <span><strong id="previewF">0</strong>g fat</span>
+    </div>
+
+    <button class="btn-add" id="confirmAdd">Log this food</button>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
