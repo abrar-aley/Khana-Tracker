@@ -27,6 +27,10 @@ class FoodLog(db.Model):
     carbs    = db.Column(db.Float,       nullable=False)
     fat      = db.Column(db.Float,       nullable=False)
 
+class Settings(db.Model):
+    key   = db.Column(db.String(50),  primary_key=True)
+    value = db.Column(db.String(200), nullable=False)
+
 class CustomFood(db.Model):
     id       = db.Column(db.String(50),  primary_key=True)
     name     = db.Column(db.String(100), nullable=False)
@@ -503,6 +507,26 @@ def weekly_summary():
             "calories": sum(e.calories for e in entries)
         })
     return jsonify(summary)
+
+@app.route("/api/settings/goal", methods=["GET"])
+def get_goal():
+    s = Settings.query.get("calorie_goal")
+    return jsonify({"goal": int(s.value) if s else 2000})
+
+@app.route("/api/settings/goal", methods=["POST"])
+def set_goal():
+    data = request.get_json()
+    goal = int(data.get("goal", 2000))
+    if goal < 100 or goal > 10000:
+        return jsonify({"error": "Goal must be between 100 and 10000"}), 400
+    s = Settings.query.get("calorie_goal")
+    if s:
+        s.value = str(goal)
+    else:
+        s = Settings(key="calorie_goal", value=str(goal))
+        db.session.add(s)
+    db.session.commit()
+    return jsonify({"goal": goal})
 
 if __name__ == "__main__":
     with app.app_context():

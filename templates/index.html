@@ -19,10 +19,13 @@
         <p>پاکستانی کھانوں کا حساب</p>
       </div>
     </div>
-    <div class="date-nav">
+    <div class="header-right">
+      <button class="btn-goal" id="openGoal">🎯 Set Goal</button>
+      <div class="date-nav">
       <button class="btn-icon" id="prevDay">&#8249;</button>
       <span id="currentDate" class="date-label"></span>
       <button class="btn-icon" id="nextDay">&#8250;</button>
+      </div>
     </div>
   </div>
 </header>
@@ -38,7 +41,7 @@
       <div class="ring-center">
         <span class="cal-number" id="totalCal">0</span>
         <span class="cal-label">kcal today</span>
-        <span class="cal-goal">/ 2000 goal</span>
+        <span class="cal-goal" id="goalLabel">/ 2000 goal</span>
       </div>
     </div>
 
@@ -169,6 +172,27 @@
     </div>
 
     <button class="btn-add" id="confirmCustomFood">Save Food</button>
+  </div>
+</div>
+
+
+<!-- Set goal modal -->
+<div class="modal-backdrop" id="goalBackdrop" style="display:none;">
+  <div class="modal" style="max-width:320px">
+    <button class="modal-close" id="goalClose">✕</button>
+    <div class="modal-emoji">🎯</div>
+    <h3 class="modal-title">Set Calorie Goal</h3>
+    <p class="modal-meta">How many calories do you want to eat per day?</p>
+    <div class="form-row">
+      <label>Daily Calorie Goal (kcal)</label>
+      <input type="number" id="goalInput" class="qty-field" style="width:100%;text-align:center;font-size:1.5rem" min="100" max="10000" value="2000">
+    </div>
+    <div style="display:flex;gap:.5rem;margin-top:.5rem">
+      <button class="btn-add" style="background:var(--ink3);flex:1" onclick="setQuickGoal(1500)">1500</button>
+      <button class="btn-add" style="flex:1" onclick="setQuickGoal(2000)">2000</button>
+      <button class="btn-add" style="background:var(--green);flex:1" onclick="setQuickGoal(2500)">2500</button>
+    </div>
+    <button class="btn-add" id="confirmGoal" style="margin-top:.75rem">Save Goal</button>
   </div>
 </div>
 

@@ -4,7 +4,7 @@ var allFoods = [];
 var activeCategory = '';
 var selectedFood = null;
 var selectedMeal = 'Breakfast';
-var GOAL = 2000;
+var GOAL = 2000; // will be loaded from server
 
 function $(id) { return document.getElementById(id); }
 function isoDate(d) { return d.toISOString().split('T')[0]; }
@@ -306,8 +306,56 @@ $('searchInput').oninput = function(e) {
 };
 
 // ── Init ──────────────────────────────────────────────────────
+loadGoal();
 updateDateLabel();
 loadCategories();
 loadFoods();
 loadLog();
 loadWeekly();
+
+// ── Goal setting ──────────────────────────────────────────────
+async function loadGoal() {
+  var res = await fetch('/api/settings/goal');
+  var data = await res.json();
+  GOAL = data.goal;
+  $('goalLabel').textContent = '/ ' + GOAL + ' goal';
+  $('goalInput').value = GOAL;
+}
+
+function setQuickGoal(val) {
+  $('goalInput').value = val;
+}
+
+$('openGoal').onclick = function() {
+  $('goalInput').value = GOAL;
+  $('goalBackdrop').style.display = 'flex';
+};
+
+$('goalClose').onclick = function(e) {
+  e.stopPropagation();
+  $('goalBackdrop').style.display = 'none';
+};
+
+$('goalBackdrop').onclick = function(e) {
+  if (e.target === $('goalBackdrop')) $('goalBackdrop').style.display = 'none';
+};
+
+$('confirmGoal').onclick = async function() {
+  var goal = parseInt($('goalInput').value);
+  if (!goal || goal < 100 || goal > 10000) {
+    showToast('Please enter a goal between 100 and 10000!');
+    return;
+  }
+  var res = await fetch('/api/settings/goal', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ goal: goal })
+  });
+  if (res.ok) {
+    GOAL = goal;
+    $('goalLabel').textContent = '/ ' + GOAL + ' goal';
+    $('goalBackdrop').style.display = 'none';
+    loadLog();
+    showToast('Goal set to ' + GOAL + ' kcal!');
+  }
+};

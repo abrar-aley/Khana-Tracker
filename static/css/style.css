@@ -499,3 +499,24 @@ html { overflow-y: scroll; }
 
 /* Force scrollbar always visible */
 html { overflow-y: scroll; }
+
+/* ── Goal button ─────────────────────────────────────────── */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.btn-goal {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  padding: .4rem .9rem;
+  border-radius: 20px;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background .15s;
+  white-space: nowrap;
+}
+.btn-goal:hover { background: rgba(255,255,255,.2); }
