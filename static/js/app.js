@@ -1,12 +1,11 @@
 // ── State ─────────────────────────────────────────────────────
-let currentDate = new Date();
-let allFoods = [];
-let activeCategory = '';
-let selectedFood = null;
-let selectedMeal = 'Breakfast';
-const GOAL = 2000;
+var currentDate = new Date();
+var allFoods = [];
+var activeCategory = '';
+var selectedFood = null;
+var selectedMeal = 'Breakfast';
+var GOAL = 2000;
 
-// ── Helpers ───────────────────────────────────────────────────
 function $(id) { return document.getElementById(id); }
 function isoDate(d) { return d.toISOString().split('T')[0]; }
 function fmtDate(d) { return d.toLocaleDateString('en-PK', { weekday:'short', day:'numeric', month:'short' }); }
@@ -19,7 +18,7 @@ function showToast(msg) {
   setTimeout(function() { t.classList.remove('show'); }, 2200);
 }
 
-// ── Modal ─────────────────────────────────────────────────────
+// ── Log food modal ────────────────────────────────────────────
 function openModal(food) {
   selectedFood = food;
   $('modalEmoji').textContent = food.emoji;
@@ -30,11 +29,11 @@ function openModal(food) {
   document.querySelector('.meal-pill[data-meal="Breakfast"]').classList.add('active');
   selectedMeal = 'Breakfast';
   updatePreview();
-  $('modalBackdrop').style.cssText = 'display:flex !important;';
+  $('modalBackdrop').style.display = 'flex';
 }
 
 function closeModal() {
-  $('modalBackdrop').style.cssText = 'display:none !important;';
+  $('modalBackdrop').style.display = 'none';
   selectedFood = null;
 }
 
@@ -42,15 +41,13 @@ function updatePreview() {
   if (!selectedFood) return;
   var qty = parseFloat($('qtyInput').value) || 1;
   $('previewCal').textContent = Math.round(selectedFood.calories * qty);
-  $('previewP').textContent   = (Math.round(selectedFood.protein  * qty * 10) / 10);
-  $('previewC').textContent   = (Math.round(selectedFood.carbs    * qty * 10) / 10);
-  $('previewF').textContent   = (Math.round(selectedFood.fat      * qty * 10) / 10);
+  $('previewP').textContent   = Math.round(selectedFood.protein  * qty * 10) / 10;
+  $('previewC').textContent   = Math.round(selectedFood.carbs    * qty * 10) / 10;
+  $('previewF').textContent   = Math.round(selectedFood.fat      * qty * 10) / 10;
 }
 
-// Wire up modal buttons
 $('modalClose').onclick = function(e) { e.stopPropagation(); closeModal(); };
 $('modalBackdrop').onclick = function(e) { if (e.target === $('modalBackdrop')) closeModal(); };
-document.onkeydown = function(e) { if (e.key === 'Escape') closeModal(); };
 
 $('qtyMinus').onclick = function() {
   var v = parseFloat($('qtyInput').value);
@@ -73,17 +70,73 @@ document.querySelectorAll('.meal-pill').forEach(function(btn) {
 $('confirmAdd').onclick = async function() {
   if (!selectedFood) return;
   var qty = parseFloat($('qtyInput').value) || 1;
+  var name = selectedFood.name;
+  var emoji = selectedFood.emoji;
   await fetch('/api/log', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ food_id: selectedFood.id, quantity: qty, meal: selectedMeal, date: isoDate(currentDate) })
   });
-  var name = selectedFood.name;
-  var emoji = selectedFood.emoji;
   closeModal();
   loadLog();
   loadWeekly();
   showToast(emoji + ' ' + name + ' logged!');
+};
+
+// ── Custom food modal ─────────────────────────────────────────
+$('openCustomFood').onclick = function() {
+  $('cfName').value = '';
+  $('cfUnit').value = '100g';
+  $('cfCalories').value = '';
+  $('cfProtein').value = '';
+  $('cfCarbs').value = '';
+  $('cfFat').value = '';
+  $('cfCategory').value = 'Custom';
+  $('customFoodBackdrop').style.display = 'flex';
+};
+
+$('customFoodClose').onclick = function(e) {
+  e.stopPropagation();
+  $('customFoodBackdrop').style.display = 'none';
+};
+
+$('customFoodBackdrop').onclick = function(e) {
+  if (e.target === $('customFoodBackdrop')) $('customFoodBackdrop').style.display = 'none';
+};
+
+$('confirmCustomFood').onclick = async function() {
+  var name = $('cfName').value.trim();
+  if (!name) { showToast('Please enter a food name!'); return; }
+
+  var res = await fetch('/api/foods/custom', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name:     name,
+      category: $('cfCategory').value,
+      unit:     $('cfUnit').value.trim() || '100g',
+      calories: parseFloat($('cfCalories').value) || 0,
+      protein:  parseFloat($('cfProtein').value)  || 0,
+      carbs:    parseFloat($('cfCarbs').value)    || 0,
+      fat:      parseFloat($('cfFat').value)      || 0,
+    })
+  });
+
+  if (res.ok) {
+    $('customFoodBackdrop').style.display = 'none';
+    showToast('Food added successfully!');
+    loadFoods();
+    loadCategories();
+  } else {
+    showToast('Error saving food!');
+  }
+};
+
+document.onkeydown = function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+    $('customFoodBackdrop').style.display = 'none';
+  }
 };
 
 // ── Date nav ──────────────────────────────────────────────────
@@ -91,8 +144,7 @@ function updateDateLabel() {
   var today = new Date(); today.setHours(0,0,0,0);
   var cur = new Date(currentDate); cur.setHours(0,0,0,0);
   var diff = Math.round((cur - today) / 86400000);
-  var label = diff === 0 ? 'Today' : diff === -1 ? 'Yesterday' : fmtDate(currentDate);
-  $('currentDate').textContent = label;
+  $('currentDate').textContent = diff === 0 ? 'Today' : diff === -1 ? 'Yesterday' : fmtDate(currentDate);
 }
 
 $('prevDay').onclick = function() { currentDate.setDate(currentDate.getDate() - 1); updateDateLabel(); loadLog(); loadWeekly(); };
@@ -144,7 +196,8 @@ function renderLog(data) {
         '<span class="log-cal">'   + entry.calories + ' kcal</span>' +
         '<button class="log-del" data-id="' + entry.entry_id + '">x</button>';
       row.querySelector('.log-del').onclick = function(e) {
-        fetch('/api/log/' + e.currentTarget.dataset.id, { method: 'DELETE' }).then(function() { loadLog(); loadWeekly(); showToast('Entry removed'); });
+        fetch('/api/log/' + e.currentTarget.dataset.id, { method: 'DELETE' })
+          .then(function() { loadLog(); loadWeekly(); showToast('Entry removed'); });
       };
       sec.appendChild(row);
     });
@@ -206,22 +259,42 @@ async function loadCategories() {
 async function loadFoods() {
   var res = await fetch('/api/foods');
   allFoods = await res.json();
-  renderFoods(allFoods);
+  var pool = activeCategory ? allFoods.filter(function(f) { return f.category === activeCategory; }) : allFoods;
+  renderFoods(pool);
 }
 
 function renderFoods(foods) {
   var grid = $('foodGrid');
   grid.innerHTML = '';
-  if (!foods.length) { grid.innerHTML = '<p style="color:var(--ink3);grid-column:1/-1;padding:1rem 0">No foods found</p>'; return; }
+  if (!foods.length) {
+    grid.innerHTML = '<p style="color:var(--ink3);grid-column:1/-1;padding:1rem 0">No foods found</p>';
+    return;
+  }
   foods.forEach(function(food) {
     var card = document.createElement('div');
-    card.className = 'food-card';
+    card.className = 'food-card' + (food.is_custom ? ' custom-card' : '');
     card.innerHTML =
+      (food.is_custom ? '<span class="custom-badge">Custom</span>' : '') +
       '<div class="food-card-emoji">' + food.emoji + '</div>' +
       '<div class="food-card-name">'  + food.name  + '</div>' +
       '<div class="food-card-cal">'   + food.calories + ' kcal</div>' +
-      '<div class="food-card-unit">'  + food.unit  + '</div>';
-    card.onclick = function() { openModal(food); };
+      '<div class="food-card-unit">'  + food.unit  + '</div>' +
+      (food.is_custom ? '<button class="del-custom" data-id="' + food.id + '">Delete</button>' : '');
+
+    card.onclick = function(e) {
+      if (e.target.classList.contains('del-custom')) return;
+      openModal(food);
+    };
+
+    if (food.is_custom) {
+      card.querySelector('.del-custom').onclick = function(e) {
+        e.stopPropagation();
+        if (confirm('Delete ' + food.name + '?')) {
+          fetch('/api/foods/custom/' + food.id, { method: 'DELETE' })
+            .then(function() { loadFoods(); loadCategories(); showToast(food.name + ' deleted'); });
+        }
+      };
+    }
     grid.appendChild(card);
   });
 }

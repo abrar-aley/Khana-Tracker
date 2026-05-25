@@ -66,7 +66,10 @@
   </section>
 
   <section class="panel panel-right">
-    <h2 class="section-title">Add Food</h2>
+    <div class="right-header">
+      <h2 class="section-title">Add Food</h2>
+      <button class="btn-custom" id="openCustomFood">+ Add Custom Food</button>
+    </div>
     <div class="search-row">
       <input type="text" id="searchInput" placeholder="Search desi khana..." class="search-input" autocomplete="off">
     </div>
@@ -75,7 +78,7 @@
   </section>
 </main>
 
-<!-- Modal OUTSIDE panels, at body level -->
+<!-- Log food modal -->
 <div class="modal-backdrop" id="modalBackdrop" style="display:none;">
   <div class="modal">
     <button class="modal-close" id="modalClose">✕</button>
@@ -111,6 +114,61 @@
     </div>
 
     <button class="btn-add" id="confirmAdd">Log this food</button>
+  </div>
+</div>
+
+<!-- Add custom food modal -->
+<div class="modal-backdrop" id="customFoodBackdrop" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" id="customFoodClose">✕</button>
+    <div class="modal-emoji">⭐</div>
+    <h3 class="modal-title">Add Custom Food</h3>
+    <p class="modal-meta">Add your own desi dish to the database</p>
+
+    <div class="form-row">
+      <label>Food Name *</label>
+      <input type="text" id="cfName" class="qty-field" style="width:100%;text-align:left;padding:.5rem .75rem" placeholder="e.g. Aloo Keema">
+    </div>
+
+    <div class="form-row">
+      <label>Category</label>
+      <select id="cfCategory" class="qty-field" style="width:100%;text-align:left;padding:.5rem .75rem">
+        <option>Rice & Biryani</option>
+        <option>Bread & Roti</option>
+        <option>Curries & Daal</option>
+        <option>BBQ & Grilled</option>
+        <option>Snacks & Street Food</option>
+        <option>Desserts & Sweets</option>
+        <option>Drinks</option>
+        <option selected>Custom</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Unit (e.g. 100g, 1 piece, 1 cup)</label>
+      <input type="text" id="cfUnit" class="qty-field" style="width:100%;text-align:left;padding:.5rem .75rem" placeholder="100g">
+    </div>
+
+    <div class="cf-macros">
+      <div class="cf-macro-field">
+        <label>Calories</label>
+        <input type="number" id="cfCalories" class="qty-field" placeholder="0" min="0">
+      </div>
+      <div class="cf-macro-field">
+        <label>Protein (g)</label>
+        <input type="number" id="cfProtein" class="qty-field" placeholder="0" min="0" step="0.1">
+      </div>
+      <div class="cf-macro-field">
+        <label>Carbs (g)</label>
+        <input type="number" id="cfCarbs" class="qty-field" placeholder="0" min="0" step="0.1">
+      </div>
+      <div class="cf-macro-field">
+        <label>Fat (g)</label>
+        <input type="number" id="cfFat" class="qty-field" placeholder="0" min="0" step="0.1">
+      </div>
+    </div>
+
+    <button class="btn-add" id="confirmCustomFood">Save Food</button>
   </div>
 </div>
 

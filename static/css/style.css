@@ -422,3 +422,80 @@ body {
 
 /* Force scrollbar always visible */
 html { overflow-y: scroll; }
+
+
+/* ── Custom food additions ────────────────────────────────── */
+.right-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.right-header .section-title { margin-bottom: 0; }
+
+.btn-custom {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: .4rem 1rem;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background .15s;
+  white-space: nowrap;
+}
+.btn-custom:hover { background: #1f5c39; }
+
+.cf-macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-bottom: 1.25rem;
+}
+.cf-macro-field label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .3rem;
+}
+.cf-macro-field input {
+  width: 100%;
+  text-align: left;
+  padding: .5rem .75rem;
+}
+
+.food-card.custom-card {
+  border-color: var(--green);
+  position: relative;
+}
+.custom-badge {
+  position: absolute;
+  top: .4rem; right: .4rem;
+  background: var(--green);
+  color: #fff;
+  font-size: .6rem;
+  padding: .1rem .35rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.food-card .del-custom {
+  display: none;
+  position: absolute;
+  bottom: .4rem; right: .4rem;
+  background: var(--red-light);
+  color: var(--red);
+  border: none;
+  border-radius: 6px;
+  font-size: .7rem;
+  padding: .15rem .4rem;
+  cursor: pointer;
+}
+.food-card.custom-card:hover .del-custom { display: block; }
+
+/* Force scrollbar always visible */
+html { overflow-y: scroll; }
