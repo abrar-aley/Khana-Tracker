@@ -78,6 +78,45 @@
     </div>
     <div class="category-filters" id="categoryFilters"></div>
     <div class="food-grid" id="foodGrid"></div>
+
+    <!-- BMI & Weight section -->
+    <div class="stats-wrap">
+      <h3 class="section-title">My Stats</h3>
+
+      <div class="bmi-row">
+        <div class="bmi-card">
+          <span class="bmi-val" id="bmiValue">--</span>
+          <span class="bmi-label">BMI</span>
+          <span class="bmi-cat" id="bmiCat">Enter height & weight</span>
+        </div>
+        <div class="weight-card">
+          <span class="bmi-val" id="currentWeight">--</span>
+          <span class="bmi-label">kg today</span>
+        </div>
+      </div>
+
+      <div class="stats-inputs">
+        <div class="stat-field">
+          <label>Height (cm)</label>
+          <div class="stat-input-row">
+            <input type="number" id="heightInput" class="qty-field" placeholder="e.g. 175" min="50" max="300">
+            <button class="btn-stat-save" id="saveHeight">Save</button>
+          </div>
+        </div>
+        <div class="stat-field">
+          <label>Weight (kg)</label>
+          <div class="stat-input-row">
+            <input type="number" id="weightInput" class="qty-field" placeholder="e.g. 70" min="1" max="500" step="0.1">
+            <button class="btn-stat-save" id="saveWeight">Log</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="weight-chart-wrap">
+        <div class="weight-chart" id="weightChart"></div>
+      </div>
+    </div>
+
   </section>
 </main>
 

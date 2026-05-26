@@ -359,3 +359,114 @@ $('confirmGoal').onclick = async function() {
     showToast('Goal set to ' + GOAL + ' kcal!');
   }
 };
+
+// ── BMI & Weight tracker ──────────────────────────────────────
+var userHeight = null;
+
+function calcBMI(weight, height) {
+  if (!weight || !height) return null;
+  return Math.round((weight / Math.pow(height / 100, 2)) * 10) / 10;
+}
+
+function bmiCategory(bmi) {
+  if (bmi < 18.5) return { text: 'Underweight', cls: 'underweight' };
+  if (bmi < 25)   return { text: 'Normal', cls: 'normal' };
+  if (bmi < 30)   return { text: 'Overweight', cls: 'overweight' };
+  return { text: 'Obese', cls: 'obese' };
+}
+
+function updateBMIDisplay(weight) {
+  var bmi = calcBMI(weight, userHeight);
+  if (bmi) {
+    $('bmiValue').textContent = bmi;
+    var cat = bmiCategory(bmi);
+    $('bmiCat').textContent = cat.text;
+    $('bmiCat').className = 'bmi-cat ' + cat.cls;
+  } else {
+    $('bmiValue').textContent = '--';
+    $('bmiCat').textContent = 'Enter height & weight';
+    $('bmiCat').className = 'bmi-cat';
+  }
+}
+
+async function loadHeight() {
+  var res = await fetch('/api/settings/height');
+  var data = await res.json();
+  if (data.height) {
+    userHeight = data.height;
+    $('heightInput').value = data.height;
+  }
+}
+
+async function loadWeightLog() {
+  var res = await fetch('/api/weight');
+  var entries = await res.json();
+
+  if (entries.length > 0) {
+    var latest = entries[0];
+    $('currentWeight').textContent = latest.weight + ' kg';
+    $('weightInput').value = latest.weight;
+    updateBMIDisplay(latest.weight);
+  }
+
+  // Draw weight chart (last 10 entries, reversed to show oldest first)
+  var chart = $('weightChart');
+  chart.innerHTML = '';
+  if (entries.length === 0) {
+    chart.innerHTML = '<p style="color:var(--ink3);font-size:.78rem">No weight logged yet</p>';
+    return;
+  }
+
+  var reversed = entries.slice(0, 10).reverse();
+  var weights = reversed.map(function(e) { return e.weight; });
+  var minW = Math.min.apply(null, weights);
+  var maxW = Math.max.apply(null, weights);
+  var range = maxW - minW || 1;
+  var todayStr = isoDate(new Date());
+
+  reversed.forEach(function(e) {
+    var h = Math.max(((e.weight - minW) / range) * 48 + 8, 8);
+    var day = e.date.slice(5); // MM-DD
+    var col = document.createElement('div');
+    col.className = 'w-bar-col';
+    col.innerHTML =
+      '<span class="w-bar-val">' + e.weight + '</span>' +
+      '<div class="w-bar' + (e.date === todayStr ? ' today' : '') + '" style="height:' + h + 'px" title="' + e.weight + ' kg on ' + e.date + '"></div>' +
+      '<span class="w-bar-day">' + day + '</span>';
+    chart.appendChild(col);
+  });
+}
+
+$('saveHeight').onclick = async function() {
+  var h = parseFloat($('heightInput').value);
+  if (!h || h < 50 || h > 300) { showToast('Please enter a valid height!'); return; }
+  var res = await fetch('/api/settings/height', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ height: h })
+  });
+  if (res.ok) {
+    userHeight = h;
+    showToast('Height saved: ' + h + ' cm');
+    var w = parseFloat($('weightInput').value);
+    if (w) updateBMIDisplay(w);
+  }
+};
+
+$('saveWeight').onclick = async function() {
+  var w = parseFloat($('weightInput').value);
+  if (!w || w <= 0 || w > 500) { showToast('Please enter a valid weight!'); return; }
+  var res = await fetch('/api/weight', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ weight: w, date: isoDate(currentDate) })
+  });
+  if (res.ok) {
+    showToast('Weight logged: ' + w + ' kg');
+    loadWeightLog();
+  }
+};
+
+// Add to init
+loadHeight();
+loadWeightLog();

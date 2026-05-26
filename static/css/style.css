@@ -520,3 +520,117 @@ html { overflow-y: scroll; }
   white-space: nowrap;
 }
 .btn-goal:hover { background: rgba(255,255,255,.2); }
+
+/* ── Stats section ───────────────────────────────────────── */
+.stats-wrap {
+  margin-top: 1.5rem;
+  border-top: 1px dashed var(--border);
+  padding-top: 1.5rem;
+}
+
+.bmi-row {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.bmi-card, .weight-card {
+  flex: 1;
+  background: var(--saffron-light);
+  border-radius: 12px;
+  padding: .75rem;
+  text-align: center;
+}
+.weight-card { background: var(--green-light); }
+
+.bmi-val {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink);
+  line-height: 1;
+}
+.bmi-label {
+  display: block;
+  font-size: .7rem;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin: .2rem 0;
+}
+.bmi-cat {
+  display: block;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--saffron);
+}
+.bmi-cat.underweight { color: #3498db; }
+.bmi-cat.normal      { color: var(--green); }
+.bmi-cat.overweight  { color: var(--saffron); }
+.bmi-cat.obese       { color: var(--red); }
+
+.stats-inputs {
+  display: flex;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.stat-field { flex: 1; }
+.stat-field label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--ink3);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: .4rem;
+}
+.stat-input-row {
+  display: flex;
+  gap: .4rem;
+}
+.stat-input-row .qty-field {
+  flex: 1;
+  padding: .5rem .5rem;
+  text-align: center;
+}
+.btn-stat-save {
+  background: var(--saffron);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .5rem .7rem;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background .15s;
+  white-space: nowrap;
+}
+.btn-stat-save:hover { background: #c96f0f; }
+
+.weight-chart-wrap { margin-top: .5rem; }
+.weight-chart {
+  display: flex;
+  gap: .3rem;
+  align-items: flex-end;
+  height: 60px;
+}
+.w-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.w-bar {
+  width: 100%;
+  background: var(--green-light);
+  border: 1px solid var(--green);
+  border-radius: 3px 3px 0 0;
+  min-height: 3px;
+}
+.w-bar.today { background: var(--green); }
+.w-bar-day { font-size: .62rem; color: var(--ink3); }
+.w-bar-val { font-size: .6rem; color: var(--ink3); }

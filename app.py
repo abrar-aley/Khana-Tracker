@@ -31,6 +31,11 @@ class Settings(db.Model):
     key   = db.Column(db.String(50),  primary_key=True)
     value = db.Column(db.String(200), nullable=False)
 
+class WeightLog(db.Model):
+    id      = db.Column(db.String(8),  primary_key=True)
+    date    = db.Column(db.String(10), nullable=False, unique=True)
+    weight  = db.Column(db.Float,     nullable=False)  # kg
+
 class CustomFood(db.Model):
     id       = db.Column(db.String(50),  primary_key=True)
     name     = db.Column(db.String(100), nullable=False)
@@ -527,6 +532,47 @@ def set_goal():
         db.session.add(s)
     db.session.commit()
     return jsonify({"goal": goal})
+
+@app.route("/api/weight", methods=["GET"])
+def get_weight_log():
+    entries = WeightLog.query.order_by(WeightLog.date.desc()).limit(30).all()
+    return jsonify([{"date": e.date, "weight": e.weight} for e in entries])
+
+@app.route("/api/weight", methods=["POST"])
+def log_weight():
+    data   = request.get_json()
+    weight = float(data.get("weight", 0))
+    day    = data.get("date", date.today().isoformat())
+    if weight <= 0 or weight > 500:
+        return jsonify({"error": "Invalid weight"}), 400
+    entry = WeightLog.query.filter_by(date=day).first()
+    if entry:
+        entry.weight = weight
+    else:
+        entry = WeightLog(id=str(uuid.uuid4())[:8], date=day, weight=weight)
+        db.session.add(entry)
+    db.session.commit()
+    return jsonify({"date": entry.date, "weight": entry.weight}), 201
+
+@app.route("/api/settings/height", methods=["GET"])
+def get_height():
+    s = Settings.query.get("height_cm")
+    return jsonify({"height": float(s.value) if s else None})
+
+@app.route("/api/settings/height", methods=["POST"])
+def set_height():
+    data   = request.get_json()
+    height = float(data.get("height", 0))
+    if height < 50 or height > 300:
+        return jsonify({"error": "Invalid height"}), 400
+    s = Settings.query.get("height_cm")
+    if s:
+        s.value = str(height)
+    else:
+        s = Settings(key="height_cm", value=str(height))
+        db.session.add(s)
+    db.session.commit()
+    return jsonify({"height": height})
 
 if __name__ == "__main__":
     with app.app_context():
